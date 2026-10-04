@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,6 +15,6 @@ public class PumpkinController : MonoBehaviour
 
     public void OnMove(InputValue value)
     {
-        moveInput = value.Get<Vector3>();
+        moveInput = value.Get<Vector2>();
     }
 }
