@@ -1,27 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DrawVectrors : MonoBehaviour
 {
-    [SerializeField]  Transform p;
-    [SerializeField]  Transform q;
+    [SerializeField] Transform p;
+    [SerializeField] Transform q;
     [SerializeField] Vector3 v = new Vector3(4, -1, 0);
     [SerializeField] private Transform targetObject;
 
-    void Start()
-    {
-
-    }
-
-    //void Update()
-    //{
-    //    p = p.position - targetObject.position;
-    //}
-
     private void OnDrawGizmos()
     {
-        if(p != null)
+        if (p != null)
         {
             Gizmos.color = Color.cyan;
             Gizmos.DrawLine(p.position, p.position + v);
