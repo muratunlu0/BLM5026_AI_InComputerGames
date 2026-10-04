@@ -2,7 +2,7 @@
 
 Unity project developed throughout the **BLM5026 – AI in Computer Games** course. Each week the topic covered in class is implemented in the same project, and that week's summary and homework are added to this page.
 
-**▶ [Play the demo in your browser](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/)**: the demo is here, a WebGL build that runs without installing anything.
+**▶ [Play the demo in your browser](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/)**: the demo is here. It is a WebGL build that fills the browser window and starts right away, nothing to install. Move with W/A/S/D or the arrow keys.
 
 ![The pig chases the player after it enters the view cone](Docs/Week2/fov-chase.png)
 
@@ -24,8 +24,6 @@ A new row and a new section are added as the weeks go on.
 | Key | Action |
 |-----|--------|
 | W / A / S / D or arrow keys | Move the player (Pumpkin) |
-
-In the browser demo, click the game once so it receives keyboard input.
 
 ---
 
