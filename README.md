@@ -2,13 +2,15 @@
 
 Unity project developed throughout the **BLM5026 – AI in Computer Games** course. Each week the topic covered in class is implemented in the same project, and that week's summary and homework are added to this page.
 
+**▶ [Play the demo in your browser](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/)**: the demo is here, a WebGL build that runs without installing anything.
+
 ![The pig chases the player after it enters the view cone](Docs/Week2/fov-chase.png)
 
 ## Weekly progress
 
-| Week | Topic | Scene |
-|:----:|-------|-------|
-| 2 | Math for game AI: vectors, moving toward a goal, field of view (FOV) | `Assets/Moving.unity`, `Assets/Scenes/SampleScene.unity` |
+| Week | Topic | Scene | Demo |
+|:----:|-------|-------|:----:|
+| 2 | Math for game AI: vectors, moving toward a goal, field of view (FOV) | `Assets/Moving.unity`, `Assets/Scenes/SampleScene.unity` | [Play](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/week2/) |
 
 A new row and a new section are added as the weeks go on.
 
@@ -22,6 +24,8 @@ A new row and a new section are added as the weeks go on.
 | Key | Action |
 |-----|--------|
 | W / A / S / D or arrow keys | Move the player (Pumpkin) |
+
+In the browser demo, click the game once so it receives keyboard input.
 
 ---
 
@@ -52,6 +56,8 @@ Game AI looks like behavior from the outside, but underneath it is geometry, alg
 > When the player stays behind the pig, outside its field of view, the pig cannot see the player and must not follow. Once the player gets in front of the pig, inside its view angle, the pig should start following.
 
 Every frame the pig computes the vector to the player and checks two conditions: is the angle between that vector and its forward direction smaller than half of the view angle, and is the player within the view distance. If both hold it chases the player, otherwise it stays where it is. The view cone is drawn in `OnDrawGizmos`: **red** when the player is not visible, **green** when it is.
+
+Try it in the [week 2 demo](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/week2/): the pig faces right at the start and ignores you while you stay behind it; walk in front of it and it turns and follows. Gizmos only exist in the editor, so the cone itself is not drawn in the browser build.
 
 | Player behind the pig: no chase | Player inside the cone: chase |
 |:--:|:--:|
