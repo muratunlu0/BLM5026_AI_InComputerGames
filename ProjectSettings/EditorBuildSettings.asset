@@ -8,5 +8,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Moving.unity
     guid: fc49b075a56f74b0d9093b16acda486d
+  - enabled: 1
+    path: Assets/Week3/Scenes/W3_Tanks.unity
+    guid: 350840fa8848a464c89d66682b29352b
+  - enabled: 1
+    path: Assets/Week3/Scenes/W3_Time.unity
+    guid: a94d52503484d8549818b705cf87b25a
+  - enabled: 1
+    path: Assets/Week3/Scenes/W3_Velocity.unity
+    guid: 4de3a882fa0b1eb439f6b7f9e57d43d0
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

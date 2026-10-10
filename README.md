@@ -2,15 +2,16 @@
 
 Unity project developed throughout the **BLM5026 – AI in Computer Games** course. Each week the topic covered in class is implemented in the same project, and that week's summary and homework are added to this page.
 
-**▶ [Play the demo in your browser](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/)**: the demo is here. It is a WebGL build that fills the browser window and starts right away, nothing to install. Move with W/A/S/D or the arrow keys.
+**▶ [Play the demo in your browser](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/)**: the link opens the latest week's build (week 3 right now). It is a WebGL build that fills the browser window and starts right away, nothing to install. Every week's build stays online, see the table below.
 
-![The pig chases the player after it enters the view cone](Docs/Week2/fov-chase.png)
+![The player tank's predicted shot hits the moving enemy tank](Docs/Week3/predictive-shot.png)
 
 ## Weekly progress
 
-| Week | Topic | Scene | Demo |
-|:----:|-------|-------|:----:|
+| Week | Topic | Scenes | Demo |
+|:----:|-------|--------|:----:|
 | 2 | Math for game AI: vectors, moving toward a goal, field of view (FOV) | `Assets/Moving.unity`, `Assets/Scenes/SampleScene.unity` | [Play](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/week2/) |
+| 3 | The physics of AI: time and update loops, `Time.deltaTime`, speed vs. velocity, predicting a moving target, acceleration, drag and gravity | `Assets/Week3/Scenes/W3_Tanks.unity`, `W3_Time.unity`, `W3_Velocity.unity` | [Play](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/week3/) |
 
 A new row and a new section are added as the weeks go on.
 
@@ -18,12 +19,15 @@ A new row and a new section are added as the weeks go on.
 
 1. Clone the repository and add the folder in Unity Hub with **Add → Add project from disk**.
 2. Open the project with **Unity 6.3 LTS (6000.3.24f1)**.
-3. Open the scene of the week you want to try (`Assets/Moving.unity` for week 2).
+3. Open the scene of the week you want to try (`Assets/Week3/Scenes/W3_Tanks.unity` for week 3, `Assets/Moving.unity` for week 2).
 4. Press **Play** and click on the Game window.
 
 | Key | Action |
 |-----|--------|
-| W / A / S / D or arrow keys | Move the player (Pumpkin) |
+| W / A / S / D or arrow keys | Move the player (the Pumpkin in week 2, the green tank in week 3) |
+| Space | Week 3: predicted shot at the moving enemy |
+| T / G | Week 3: raise / lower the turret |
+| B | Week 3: fire a physics shell from the turret |
 
 ---
 
@@ -75,25 +79,79 @@ The settings can be changed on the **Moving** component of the Pig:
 
 ---
 
+## Week 3 – The Physics of AI
+
+Moving things in a game means dealing with time, speed, velocity and acceleration. This week starts with how Unity's update loops run, makes movement frame-rate independent, then builds up to a tank that fires at a moving target and shells that fly under gravity.
+
+### Covered in class
+
+- **Time and update loops:** `FixedUpdate` runs on a fixed timestep (0.02 s), `Update` once per rendered frame, `LateUpdate` after all updates; `Time.realtimeSinceStartup` is the wall clock. Movement written "per call" runs at a different speed on every machine.
+- **Normalizing with `Time.deltaTime`:** multiplying movement and rotation by the frame time gives the same result at any frame rate; a `speed` field makes it tunable in the Inspector.
+- **Speed vs. velocity:** speed is a scalar, velocity is a vector. `transform.Translate(0, 0, speed * Time.deltaTime)` moves along the local Z axis; adding a Y component makes the path diagonal.
+- **Predicting a moving target:** the shell and the target must be at the same place at the same time, `s·t = |p + v·t|`, which is a quadratic in `t`. `CalculateTrajectory()` solves it with `Vector3.Dot` and returns the direction to aim at.
+- **Acceleration and Newton's second law:** `a = F / m`. A one-time impulse at launch, then drag and gravity applied every frame, give a ballistic arc.
+
+### Implementation
+
+| Scene | Scripts | What it shows |
+|-------|---------|---------------|
+| `W3_Time` | [`UpdateMove`](Assets/Week3/Scripts/UpdateMove.cs), [`LateUpdateMove`](Assets/Week3/Scripts/LateUpdateMove.cs), [`FixedUpdateMove`](Assets/Week3/Scripts/FixedUpdateMove.cs), [`SecondsUpdate`](Assets/Week3/Scripts/SecondsUpdate.cs) | Four characters moved from different update loops. With **Use Delta Time** off they drift apart (Update runs hundreds of times a second, FixedUpdate 50 times); with it on all four walk side by side at 1 m/s. |
+| `W3_Velocity` | [`MoveShell`](Assets/Week3/Scripts/MoveShell.cs) | Two shells: one straight along its local Z axis, one with a vertical factor of 0.5 so it climbs while moving. |
+| `W3_Tanks` | [`Drive`](Assets/Week3/Scripts/Drive.cs), [`FireShell`](Assets/Week3/Scripts/FireShell.cs), [`Shell`](Assets/Week3/Scripts/Shell.cs), [`ShellImpact`](Assets/Week3/Scripts/ShellImpact.cs), [`DestroyShell`](Assets/Week3/Scripts/DestroyShell.cs), [`AIFire`](Assets/Week3/Scripts/AIFire.cs), [`AlignToVelocity`](Assets/Week3/Scripts/AlignToVelocity.cs) | The player tank against a patrolling enemy. Space fires a predicted straight shot, B fires a physics shell from the turret, and the enemy answers with ballistic shells. |
+
+| Time experiment without `Time.deltaTime` | Enemy shell landing on the player |
+|:--:|:--:|
+| ![Four characters after a few seconds: the Update ones are far ahead](Docs/Week3/time-experiment.png) | ![The enemy's ballistic shell explodes on the player tank](Docs/Week3/enemy-ballistic-hit.png) |
+
+**Predicted shot (Space).** `FireShell.CalculateTrajectory()` takes the enemy's position and velocity (its `Drive` speed along its forward vector) and the shell speed, solves the intercept quadratic and turns the tank toward the intercept point before spawning a `ShellStraight`. The enemy drives at 3 m/s and the shell flies at 12 m/s, so the tank has to aim well ahead of it.
+
+**Physics shell (B).** `Shell.cs` gets its initial speed once in `Start` from `force / mass`, then every frame applies drag (`speed *= 1 - drag * dt`), adds gravity to a vertical speed and translates along its local axes. Mass 2, force 30, drag 0.1 and gravity −9.8 are set on the prefab; raise the turret with T and the shell draws a visible arc.
+
+**Enemy fire.** `AIFire.cs` on the enemy computes the launch angle that reaches the player at the current distance, `tan θ = (s² ± √(s⁴ − g(g·x² + 2·y·s²))) / (g·x)`, points the turret at that angle and every 2.5 s spawns an `AIShell` whose Rigidbody has gravity on and gets `linearVelocity = speed * gun.forward`. It aims at where you are now, not where you will be, so keep moving. The turret-controlled physics shell and this ballistic fire were finished after the session.
+
+![Player tank with its Drive, Player Input and Fire Shell components](Docs/Week3/tanks-editor.png)
+
+| Key | Action |
+|-----|--------|
+| W / S | Drive forward / backward |
+| A / D | Turn left / right |
+| Space | Predicted shot at the enemy |
+| T / G | Raise / lower the turret |
+| B | Fire a physics shell |
+
+The tank, shell and explosion assets come from the course packages. Their materials use URP shaders, so the project was switched from the Built-in render pipeline to the Universal Render Pipeline this week (`Assets/Settings`).
+
+---
+
 ## Folder structure
 
 ```
 Assets/
-├── Easy Primitive People/        Ready-made characters from the starter package (Pig, Pumpkin, ...)
+├── Easy Primitive People/        Ready-made characters from the week 2 starter package
 ├── Materials/
 ├── Scenes/
-│   └── SampleScene.unity         Vector drawing activity
+│   └── SampleScene.unity         Week 2 vector drawing activity
 ├── Scripts/
 │   ├── DrawVectrors.cs
 │   └── PumpkinController.cs
+├── Settings/                     URP render pipeline assets
+├── Week3/
+│   ├── Materials/                Snow ground, tank colours, explosion
+│   ├── Models/                   Tank.fbx, Shell.fbx and the tank prefabs
+│   ├── Prefabs/                  Shell, ShellStraight, AIShell, ShellExplosion
+│   ├── Scenes/                   W3_Time, W3_Velocity, W3_Tanks
+│   ├── Scripts/
+│   ├── Sprites/
+│   └── Textures/
 ├── InputSystem_Actions.inputactions
 ├── Moving.cs
-└── Moving.unity                  Pursuit and FOV scene
+└── Moving.unity                  Week 2 pursuit and FOV scene
 Docs/
-└── Week2/                        Screenshots used in this README
+├── Week2/                        Screenshots used in this README
+└── Week3/
 ```
 
 ## Environment
 
-- Unity 6.3 LTS (6000.3.24f1), Built-in Render Pipeline
+- Unity 6.3 LTS (6000.3.24f1), Universal Render Pipeline 17.3 (Built-in until week 2)
 - Input System 1.20.0
