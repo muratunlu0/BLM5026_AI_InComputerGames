@@ -11,7 +11,7 @@ Unity project developed throughout the **BLM5026 – AI in Computer Games** cour
 | Week | Topic | Scenes | Demo |
 |:----:|-------|--------|:----:|
 | 2 | Math for game AI: vectors, moving toward a goal, field of view (FOV) | `Assets/Moving.unity`, `Assets/Scenes/SampleScene.unity` | [Play](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/week2/) |
-| 3 | The physics of AI: time and update loops, `Time.deltaTime`, speed vs. velocity, predicting a moving target, acceleration, drag and gravity | `Assets/Week3/Scenes/W3_Tanks.unity`, `W3_Time.unity`, `W3_Velocity.unity` | [Play](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/week3/) |
+| 3 | The physics of AI: time and update loops, `Time.deltaTime`, speed vs. velocity, predicting a moving target, acceleration, drag and gravity | `Assets/Week3/Scenes/W3_Tanks.unity`, `W3_Time.unity`, `W3_Cubes.unity`, `W3_Velocity.unity` | [Play](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/week3/) |
 
 A new row and a new section are added as the weeks go on.
 
@@ -97,6 +97,7 @@ Moving things in a game means dealing with time, speed, velocity and acceleratio
 | Scene | Scripts | What it shows |
 |-------|---------|---------------|
 | `W3_Time` | [`UpdateMove`](Assets/Week3/Scripts/UpdateMove.cs), [`LateUpdateMove`](Assets/Week3/Scripts/LateUpdateMove.cs), [`FixedUpdateMove`](Assets/Week3/Scripts/FixedUpdateMove.cs), [`SecondsUpdate`](Assets/Week3/Scripts/SecondsUpdate.cs) | Four characters moved from different update loops. With **Use Delta Time** off they drift apart (Update runs hundreds of times a second, FixedUpdate 50 times); with it on all four walk side by side at 1 m/s. |
+| `W3_Cubes` | the same four scripts | The class version of the experiment with four coloured cubes (red Update, blue LateUpdate, green FixedUpdate, black realtime) instead of characters. |
 | `W3_Velocity` | [`MoveShell`](Assets/Week3/Scripts/MoveShell.cs) | Two shells: one straight along its local Z axis, one with a vertical factor of 0.5 so it climbs while moving. |
 | `W3_Tanks` | [`Drive`](Assets/Week3/Scripts/Drive.cs), [`FireShell`](Assets/Week3/Scripts/FireShell.cs), [`Shell`](Assets/Week3/Scripts/Shell.cs), [`ShellImpact`](Assets/Week3/Scripts/ShellImpact.cs), [`DestroyShell`](Assets/Week3/Scripts/DestroyShell.cs), [`AIFire`](Assets/Week3/Scripts/AIFire.cs), [`AlignToVelocity`](Assets/Week3/Scripts/AlignToVelocity.cs) | The player tank against a patrolling enemy. Space fires a predicted straight shot, B fires a physics shell from the turret, F fires ballistic shells that lead the enemy, and the enemy answers with ballistic shells of its own. |
 
@@ -125,7 +126,7 @@ The turret-controlled physics shell, the enemy's fire and the player's F shots w
 | B | Fire a physics shell |
 | F (hold) | Ballistic shots that lead the enemy |
 
-The [week 3 demo](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/week3/) contains all three scenes. The buttons at the top left switch between **Tanks**, **Time** and **Velocity**, **Restart** reloads the current scene, and in the Time scene the **Use Delta Time** button turns the normalization off and on so the four characters can be compared in the browser as well. The buttons live on a small `DemoUI` prefab (a Canvas with legacy UI buttons wired to [`SceneSwitcher.cs`](Assets/Week3/Scripts/SceneSwitcher.cs) and [`TimeExperiment.cs`](Assets/Week3/Scripts/TimeExperiment.cs)) that sits in each of the three scenes.
+The [week 3 demo](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/week3/) contains all four scenes. The buttons at the top left switch between **Tanks**, **Time**, **Cubes** and **Velocity**, **Restart** reloads the current scene, and in the two time scenes the **Use Delta Time** button turns the normalization off and on so the four characters can be compared in the browser as well. The buttons live on a small `DemoUI` prefab (a Canvas with legacy UI buttons wired to [`SceneSwitcher.cs`](Assets/Week3/Scripts/SceneSwitcher.cs) and [`TimeExperiment.cs`](Assets/Week3/Scripts/TimeExperiment.cs)) that sits in each of the four scenes.
 
 The tank, shell and explosion assets come from the course packages. Their materials use URP shaders, so the project was switched from the Built-in render pipeline to the Universal Render Pipeline this week (`Assets/Settings`).
 
@@ -147,7 +148,7 @@ Assets/
 │   ├── Materials/                Snow ground, tank colours, explosion
 │   ├── Models/                   Tank.fbx, Shell.fbx and the tank prefabs
 │   ├── Prefabs/                  Shell, ShellStraight, AIShell, ShellExplosion
-│   ├── Scenes/                   W3_Time, W3_Velocity, W3_Tanks
+│   ├── Scenes/                   W3_Time, W3_Cubes, W3_Velocity, W3_Tanks
 │   ├── Scripts/
 │   ├── Sprites/
 │   └── Textures/

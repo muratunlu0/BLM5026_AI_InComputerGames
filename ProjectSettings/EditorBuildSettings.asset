@@ -17,5 +17,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Week3/Scenes/W3_Velocity.unity
     guid: 4de3a882fa0b1eb439f6b7f9e57d43d0
+  - enabled: 1
+    path: Assets/Week3/Scenes/W3_Cubes.unity
+    guid: 82e59ad5d4d7bd447b74bd779792df51
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
