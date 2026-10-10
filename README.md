@@ -125,6 +125,8 @@ The turret-controlled physics shell, the enemy's fire and the player's F shots w
 | B | Fire a physics shell |
 | F (hold) | Ballistic shots that lead the enemy |
 
+The [week 3 demo](https://muratunlu0.github.io/BLM5026_AI_InComputerGames/week3/) contains all three scenes. The buttons at the top left switch between **Tanks**, **Time** and **Velocity**, **Restart** reloads the current scene, and in the Time scene the **Use Delta Time** button turns the normalization off and on so the four characters can be compared in the browser as well. The buttons live on a small `DemoUI` prefab (a Canvas with legacy UI buttons wired to [`SceneSwitcher.cs`](Assets/Week3/Scripts/SceneSwitcher.cs) and [`TimeExperiment.cs`](Assets/Week3/Scripts/TimeExperiment.cs)) that sits in each of the three scenes.
+
 The tank, shell and explosion assets come from the course packages. Their materials use URP shaders, so the project was switched from the Built-in render pipeline to the Universal Render Pipeline this week (`Assets/Settings`).
 
 ---
