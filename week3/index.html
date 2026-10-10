@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes">
+<title>BLM5026 AI in Computer Games - Week 3</title>
+<link rel="shortcut icon" href="TemplateData/favicon.ico">
+<style>
+html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #231f20; }
+#unity-canvas { display: block; width: 100vw; height: 100vh; background: #231f20; outline: none; }
+#unity-loading-bar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 260px; }
+#unity-progress-bar-empty { width: 100%; height: 14px; border: 2px solid #fff; border-radius: 9px; box-sizing: border-box; }
+#unity-progress-bar-full { width: 0%; height: 100%; background: #fff; border-radius: 7px; }
+#controls { position: absolute; left: 0; right: 0; bottom: 18px; text-align: center; color: #fff; font: 15px "Segoe UI", Arial, sans-serif; text-shadow: 0 1px 3px #000; pointer-events: none; opacity: .9; }
+</style>
+</head>
+<body>
+<canvas id="unity-canvas" tabindex="-1"></canvas>
+<div id="unity-loading-bar"><div id="unity-progress-bar-empty"><div id="unity-progress-bar-full"></div></div></div>
+<div id="controls">W/A/S/D drive &middot; Space predictive shot &middot; T/G turret &middot; B shell</div>
+<script>
+var canvas = document.querySelector("#unity-canvas");
+var config = {
+  arguments: [],
+  dataUrl: "Build/week3.data.unityweb",
+  frameworkUrl: "Build/week3.framework.js.unityweb",
+  codeUrl: "Build/week3.wasm.unityweb",
+  streamingAssetsUrl: "StreamingAssets",
+  companyName: "DefaultCompany",
+  productName: "BLM5026 AI in Computer Games - Week 3",
+  productVersion: "0.1"
+};
+var script = document.createElement("script");
+script.src = "Build/week3.loader.js";
+script.onload = function () {
+  createUnityInstance(canvas, config, function (progress) {
+    document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
+  }).then(function () {
+    document.querySelector("#unity-loading-bar").style.display = "none";
+    canvas.focus();
+    window.addEventListener("focus", function () { canvas.focus(); });
+  }).catch(function (message) {
+    alert(message);
+  });
+};
+document.body.appendChild(script);
+</script>
+</body>
+</html>
