@@ -58,6 +58,11 @@ public class FireShell : MonoBehaviour
         return flat.magnitude / (ballisticSpeed * Mathf.Cos(angle * Mathf.Deg2Rad));
     }
 
+    bool BallisticReady()
+    {
+        return turretBase != null && gun != null && ballisticBullet != null;
+    }
+
     void FireBallistic()
     {
         Vector3 aimPoint = enemy.transform.position;
@@ -86,7 +91,7 @@ public class FireShell : MonoBehaviour
 
         delay -= Time.deltaTime;
 
-        if (Keyboard.current.fKey.isPressed && delay <= 0.0f && turretBase != null && gun != null && ballisticBullet != null)
+        if (Keyboard.current.fKey.isPressed && delay <= 0.0f && BallisticReady())
             FireBallistic();
 
         if (!Keyboard.current.spaceKey.wasPressedThisFrame)

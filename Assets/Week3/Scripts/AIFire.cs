@@ -30,14 +30,14 @@ public class AIFire : MonoBehaviour
         return Mathf.Atan2(tangent, gravity * x) * Mathf.Rad2Deg;
     }
 
-    public static bool AimTurret(Transform turret, Vector3 gunPosition, Vector3 targetPosition, float speed, bool high)
+    public static bool AimTurret(Transform turret, Vector3 from, Vector3 to, float speed, bool high)
     {
-        Vector3 direction = targetPosition - turret.position;
+        Vector3 direction = to - turret.position;
         direction.y = 0.0f;
         if (direction == Vector3.zero)
             return false;
 
-        float? angle = LaunchAngle(gunPosition, targetPosition, speed, high);
+        float? angle = LaunchAngle(from, to, speed, high);
         if (angle == null)
             return false;
 
