@@ -12,15 +12,9 @@ public class AIFire : MonoBehaviour
 
     private float delay;
 
-    void CreateBullet()
+    public static float? LaunchAngle(Vector3 from, Vector3 to, float speed, bool high)
     {
-        GameObject shell = Instantiate(bullet, gun.position, gun.rotation);
-        shell.GetComponent<Rigidbody>().linearVelocity = speed * gun.forward;
-    }
-
-    float? CalculateAngle(bool high)
-    {
-        Vector3 targetDir = target.transform.position - gun.position;
+        Vector3 targetDir = to - from;
         float y = targetDir.y;
         targetDir.y = 0.0f;
         float x = targetDir.magnitude;
@@ -36,24 +30,37 @@ public class AIFire : MonoBehaviour
         return Mathf.Atan2(tangent, gravity * x) * Mathf.Rad2Deg;
     }
 
+    public static bool AimTurret(Transform turret, Vector3 gunPosition, Vector3 targetPosition, float speed, bool high)
+    {
+        Vector3 direction = targetPosition - turret.position;
+        direction.y = 0.0f;
+        if (direction == Vector3.zero)
+            return false;
+
+        float? angle = LaunchAngle(gunPosition, targetPosition, speed, high);
+        if (angle == null)
+            return false;
+
+        turret.rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(-(float)angle, 0.0f, 0.0f);
+        return true;
+    }
+
+    public static void Launch(GameObject bullet, Transform gun, float speed)
+    {
+        GameObject shell = Instantiate(bullet, gun.position, gun.rotation);
+        shell.GetComponent<Rigidbody>().linearVelocity = speed * gun.forward;
+    }
+
     void Update()
     {
         delay -= Time.deltaTime;
 
-        Vector3 direction = target.transform.position - transform.position;
-        direction.y = 0.0f;
-        if (direction == Vector3.zero)
+        if (!AimTurret(turret, gun.position, target.transform.position, speed, useHighAngle))
             return;
-
-        float? angle = CalculateAngle(useHighAngle);
-        if (angle == null)
-            return;
-
-        turret.rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(-(float)angle, 0.0f, 0.0f);
 
         if (delay <= 0.0f)
         {
-            CreateBullet();
+            Launch(bullet, gun, speed);
             delay = fireDelay;
         }
     }

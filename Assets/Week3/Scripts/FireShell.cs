@@ -6,6 +6,14 @@ public class FireShell : MonoBehaviour
     public GameObject bullet;
     public GameObject turret;
     public GameObject enemy;
+    public Transform turretBase;
+    public Transform gun;
+    public GameObject ballisticBullet;
+    public float ballisticSpeed = 15.0f;
+    public bool useHighAngle = true;
+    public float fireDelay = 0.2f;
+
+    private float delay;
 
     void CreateBullet()
     {
@@ -43,9 +51,45 @@ public class FireShell : MonoBehaviour
         return t * p + v;
     }
 
+    float FlightTime(Vector3 from, Vector3 to, float angle)
+    {
+        Vector3 flat = to - from;
+        flat.y = 0.0f;
+        return flat.magnitude / (ballisticSpeed * Mathf.Cos(angle * Mathf.Deg2Rad));
+    }
+
+    void FireBallistic()
+    {
+        Vector3 aimPoint = enemy.transform.position;
+        Vector3 v = enemy.transform.forward * enemy.GetComponent<Drive>().speed;
+
+        for (int i = 0; i < 3; i++)
+        {
+            float? angle = AIFire.LaunchAngle(gun.position, aimPoint, ballisticSpeed, useHighAngle);
+            if (angle == null)
+                return;
+
+            aimPoint = enemy.transform.position + v * FlightTime(gun.position, aimPoint, (float)angle);
+        }
+
+        if (!AIFire.AimTurret(turretBase, gun.position, aimPoint, ballisticSpeed, useHighAngle))
+            return;
+
+        AIFire.Launch(ballisticBullet, gun, ballisticSpeed);
+        delay = fireDelay;
+    }
+
     void Update()
     {
-        if (Keyboard.current == null || !Keyboard.current.spaceKey.wasPressedThisFrame)
+        if (Keyboard.current == null)
+            return;
+
+        delay -= Time.deltaTime;
+
+        if (Keyboard.current.fKey.isPressed && delay <= 0.0f && turretBase != null && gun != null && ballisticBullet != null)
+            FireBallistic();
+
+        if (!Keyboard.current.spaceKey.wasPressedThisFrame)
             return;
 
         Vector3 aimAt = CalculateTrajectory();

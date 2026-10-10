@@ -7,18 +7,23 @@ public class Shell : MonoBehaviour
     public float force = 30.0f;
     public float drag = 0.1f;
     public float gravity = -9.8f;
+    public bool continuousForce = false;
 
+    private float acceleration;
     private float speed;
     private float ySpeed;
 
     void Start()
     {
-        float acceleration = force / mass;
+        acceleration = force / mass;
         speed = acceleration * 1.0f;
     }
 
     void LateUpdate()
     {
+        if (continuousForce)
+            speed += acceleration * Time.deltaTime;
+
         speed *= (1.0f - Time.deltaTime * drag);
         ySpeed += gravity * Time.deltaTime;
         transform.Translate(0, ySpeed * Time.deltaTime, speed * Time.deltaTime);

@@ -28,6 +28,7 @@ A new row and a new section are added as the weeks go on.
 | Space | Week 3: predicted shot at the moving enemy |
 | T / G | Week 3: raise / lower the turret |
 | B | Week 3: fire a physics shell from the turret |
+| F (hold) | Week 3: ballistic shots at the enemy, the turret aims itself |
 
 ---
 
@@ -97,7 +98,7 @@ Moving things in a game means dealing with time, speed, velocity and acceleratio
 |-------|---------|---------------|
 | `W3_Time` | [`UpdateMove`](Assets/Week3/Scripts/UpdateMove.cs), [`LateUpdateMove`](Assets/Week3/Scripts/LateUpdateMove.cs), [`FixedUpdateMove`](Assets/Week3/Scripts/FixedUpdateMove.cs), [`SecondsUpdate`](Assets/Week3/Scripts/SecondsUpdate.cs) | Four characters moved from different update loops. With **Use Delta Time** off they drift apart (Update runs hundreds of times a second, FixedUpdate 50 times); with it on all four walk side by side at 1 m/s. |
 | `W3_Velocity` | [`MoveShell`](Assets/Week3/Scripts/MoveShell.cs) | Two shells: one straight along its local Z axis, one with a vertical factor of 0.5 so it climbs while moving. |
-| `W3_Tanks` | [`Drive`](Assets/Week3/Scripts/Drive.cs), [`FireShell`](Assets/Week3/Scripts/FireShell.cs), [`Shell`](Assets/Week3/Scripts/Shell.cs), [`ShellImpact`](Assets/Week3/Scripts/ShellImpact.cs), [`DestroyShell`](Assets/Week3/Scripts/DestroyShell.cs), [`AIFire`](Assets/Week3/Scripts/AIFire.cs), [`AlignToVelocity`](Assets/Week3/Scripts/AlignToVelocity.cs) | The player tank against a patrolling enemy. Space fires a predicted straight shot, B fires a physics shell from the turret, and the enemy answers with ballistic shells. |
+| `W3_Tanks` | [`Drive`](Assets/Week3/Scripts/Drive.cs), [`FireShell`](Assets/Week3/Scripts/FireShell.cs), [`Shell`](Assets/Week3/Scripts/Shell.cs), [`ShellImpact`](Assets/Week3/Scripts/ShellImpact.cs), [`DestroyShell`](Assets/Week3/Scripts/DestroyShell.cs), [`AIFire`](Assets/Week3/Scripts/AIFire.cs), [`AlignToVelocity`](Assets/Week3/Scripts/AlignToVelocity.cs) | The player tank against a patrolling enemy. Space fires a predicted straight shot, B fires a physics shell from the turret, F fires ballistic shells that lead the enemy, and the enemy answers with ballistic shells of its own. |
 
 | Time experiment without `Time.deltaTime` | Enemy shell landing on the player |
 |:--:|:--:|
@@ -107,7 +108,11 @@ Moving things in a game means dealing with time, speed, velocity and acceleratio
 
 **Physics shell (B).** `Shell.cs` gets its initial speed once in `Start` from `force / mass`, then every frame applies drag (`speed *= 1 - drag * dt`), adds gravity to a vertical speed and translates along its local axes. Mass 2, force 30, drag 0.1 and gravity −9.8 are set on the prefab; raise the turret with T and the shell draws a visible arc.
 
-**Enemy fire.** `AIFire.cs` on the enemy computes the launch angle that reaches the player at the current distance, `tan θ = (s² ± √(s⁴ − g(g·x² + 2·y·s²))) / (g·x)`, points the turret at that angle and every 2.5 s spawns an `AIShell` whose Rigidbody has gravity on and gets `linearVelocity = speed * gun.forward`. It aims at where you are now, not where you will be, so keep moving. The turret-controlled physics shell and this ballistic fire were finished after the session.
+**Enemy fire.** `AIFire.cs` on the enemy computes the launch angle that reaches the player at the current distance, `tan θ = (s² ± √(s⁴ − g(g·x² + 2·y·s²))) / (g·x)`, points the turret at that angle and every 2.5 s spawns an `AIShell` whose Rigidbody has gravity on and gets `linearVelocity = speed * gun.forward`. It aims at where you are now, not where you will be, so keep moving.
+
+**Player's ballistic shots (hold F).** The same angle calculation runs on the player's tank through `FireShell.FireBallistic()`. Because the enemy is moving, the aim point is corrected for the flight time: the angle and flight time are computed for the enemy's current position, the aim point is moved by `enemy velocity × flight time`, and the calculation is repeated three times. The turret then turns to that point and an `AIShell` is launched every 0.2 s while F is held, so a stream of shells arcs onto the moving enemy. The `Shell` prefab also has a **Continuous Force** switch that reproduces the "rocket" behaviour from the slides, where the acceleration keeps acting every frame instead of once at launch.
+
+The turret-controlled physics shell, the enemy's fire and the player's F shots were finished after the session.
 
 ![Player tank with its Drive, Player Input and Fire Shell components](Docs/Week3/tanks-editor.png)
 
@@ -118,6 +123,7 @@ Moving things in a game means dealing with time, speed, velocity and acceleratio
 | Space | Predicted shot at the enemy |
 | T / G | Raise / lower the turret |
 | B | Fire a physics shell |
+| F (hold) | Ballistic shots that lead the enemy |
 
 The tank, shell and explosion assets come from the course packages. Their materials use URP shaders, so the project was switched from the Built-in render pipeline to the Universal Render Pipeline this week (`Assets/Settings`).
 
